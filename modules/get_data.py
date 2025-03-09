@@ -43,7 +43,7 @@ class LoadFile():
             self.file_to_transactions = self.process_transaction_file(file)
         print(f"Loaded {len(transaction_files)} transaction files.")
     
-        return self.transactions
+        return self.transactions, self.file_to_transactions
 
     # Process new transaction files
     def process_transaction_file(self, file_path):
@@ -86,10 +86,13 @@ class LoadFile():
         return self.file_to_transactions
 
     # Remove transactions corresponding to a deleted file
-    def remove_transactions_from_file(self, file_path):
+    def remove_transactions_from_file(self, file_path, file_to_transactions):
         # global transactions
         # Get the transaction IDs associated with the deleted file
-        transaction_ids_to_remove = self.file_to_transactions.pop(file_path, None)
+        # print(f"File deleted: {file_path}")
+        print(f"Updated file_to_transactions: {file_to_transactions}")
+        transaction_ids_to_remove = file_to_transactions.pop(file_path, None)
+        print(transaction_ids_to_remove)
 
         if not transaction_ids_to_remove:
             print(f"No transactions found for deleted file: {file_path}")
@@ -102,11 +105,12 @@ class LoadFile():
                     del self.transactions[txn_id]
 
         print(f"Removed transactions from deleted file: {file_path}")
+
     
     # Start file monitoring
     def start_file_monitoring(self):
         observer = Observer()
-        event_handler = TransactionFileHandler(self.BASE_DIR, self.transactions)
+        event_handler = TransactionFileHandler(self.BASE_DIR, self.transactions, self.file_to_transactions)
         # print(load_data.TRANSACTION_FOLDER)
         observer.schedule(event_handler, self.TRANSACTION_FOLDER, recursive=False)
         observer.start()
@@ -114,17 +118,18 @@ class LoadFile():
 
     
 class TransactionFileHandler(LoadFile, FileSystemEventHandler):
-    def __init__(self, BASE_DIR, transactions):
+    def __init__(self, BASE_DIR, transactions, file_to_transactions):
         LoadFile.__init__(self, BASE_DIR)  # Initialize the parent class (LoadFile)
         FileSystemEventHandler.__init__(self) 
         self.transactions = transactions # Initialize the FileSystemEventHandler
+        self.file_to_transactions = file_to_transactions
+
+    def on_deleted(self, event):
+        print(f"File deleted: {event.src_path}")
+        if event.src_path.endswith(".csv"):
+            self.remove_transactions_from_file(event.src_path, self.file_to_transactions)
 
     def on_created(self, event):
         print(f"New file detected: {event.src_path}")
         if event.src_path.endswith(".csv"):
             self.process_transaction_file(event.src_path)
-    
-    def on_deleted(self, event):
-        print(f"File deleted: {event.src_path}")
-        if event.src_path.endswith(".csv"):
-            self.remove_transactions_from_file(event.src_path)

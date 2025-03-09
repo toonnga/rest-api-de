@@ -69,9 +69,9 @@ def get_summary_by_city(last_n_days: int):
 # Start the app and initialization process
 @app.on_event("startup")
 async def startup_event():
-    global transactions, products  # Ensure these are recognized as global
+    global transactions, products, file_to_transactions  # Ensure these are recognized as global
     products = get_data.load_product_reference()  # Load the product reference data
-    transactions = get_data.load_existing_transactions()  # Load existing transactions
+    transactions, file_to_transactions = get_data.load_existing_transactions()  # Load existing transactions
     handler_data = get_data.start_file_monitoring
     threading.Thread(target=handler_data, daemon=True).start()
 

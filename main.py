@@ -25,7 +25,8 @@ products = {}
 @app.get("/assignment/transaction/{transaction_id}")
 def get_transaction(transaction_id: int):
     transaction = transactions.get(transaction_id)
-    data_without_product_id = {key: value for key, value in transaction.items() if key != "productId"}
+    if transaction:
+        data_without_product_id = {key: value for key, value in transaction.items() if key != "productId"}
 
     if not transaction:
         raise HTTPException(status_code=404, detail="Transaction not found")

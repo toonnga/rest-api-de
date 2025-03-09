@@ -101,7 +101,7 @@ You may need to adjust some settings, such as:
 
 **File Monitoring**
 
-    The application monitors the transactions/ folder for new transaction files. When a new .csv file is added, it will automatically process the transactions and update the global transaction dictionary. Similarly, if a file is deleted, the associated transactions will be removed.
+The application monitors the transactions/ folder for new transaction files. When a new .csv file is added, it will automatically process the transactions and update the global transaction dictionary. Similarly, if a file is deleted, the associated transactions will be removed.
 
 ## File Structure
 
@@ -112,7 +112,7 @@ The transactions/ folder should contain transaction files in CSV format with the
 - transactionAmount: The amount of the transaction.
 - transactionDatetime: The date and time of the transaction.
 
-Example transaction file (Transaction_20250309123000.csv):
+Example transaction file (Transaction_20250308101010.csv):
 
 ## Example Transaction File Structure
 
